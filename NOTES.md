@@ -52,6 +52,7 @@ sd-server must be stopped first (VRAM+RAM). Logs from Tee-Object are UTF-16 -> r
 |---|---|---|---|---|---|---|
 | base25_q8_768_s7 | base, 25 steps | 252s | 1277s (~45 s/step) | 148s | 1710s | photoreal glass/silk, sharp; lost golden particles; RAM hit 0.8GB free (TE Q4 stayed resident, pinned-mem fallbacks, ~5.9GB pagefile) but completed |
 | lora8_q8_768_s7 | turbo LoRA baked into Q8_0, 8 steps, te=disk | 240s | 515s (~42 s/step) | 150s | 932s | better prompt adherence (particles, golden rim light, faceted crystal), advertising look; RAM free 3.3GB with te=disk |
+| human_cafe_lora8_768_s11 | baked LoRA 8 steps, te=disk, human portrait | 182s | 511s | 147s | 865s | photoreal face/skin, correct 5-finger hand tucking hair, both-hands cup, consistent identity, Vietnamese street bokeh |
 
 VRAM at 768x1344x56: compute budget ~5.27GB, per-step warning "need 750MB, available 245MB" but ggml copes. 1080p impossible.
 
