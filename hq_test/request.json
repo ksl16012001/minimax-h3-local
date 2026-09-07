@@ -1,0 +1,20 @@
+{
+  "prompt": "Luxury cinematic vertical commercial for a premium crystal perfume bottle.\n\nA beautifully crafted transparent crystal perfume bottle stands on flowing\nblack silk in an elegant dark studio.\n\nWarm golden rim lighting creates realistic reflections and refractions through\nthe glass. Tiny golden dust particles slowly float through the air.\n\nThe camera performs an extremely smooth and slow cinematic dolly-in toward\nthe perfume bottle with subtle natural parallax.\n\nThe black silk moves gently from a soft breeze.\n\nRealistic transparent glass material, physically accurate reflections,\ndetailed highlights, rich blacks, high dynamic range, shallow depth of field,\nsoft cinematic background bokeh.\n\nPremium luxury fragrance advertising aesthetic.\n\nPhotorealistic, extremely detailed product photography, professional studio\nlighting, clean composition, stable geometry, consistent bottle shape across\nevery frame, realistic motion, strong temporal consistency, sharp product\ndetails.\n\nNo text.\nNo logo.\nNo watermark.\nNo distortion.\nNo flickering.\nNo duplicated objects.\nNo deformed bottle.\nNo camera shake.\n\nSoft luxurious atmospheric orchestral ambience.",
+  "width": 1080,
+  "height": 1920,
+  "video_frames": 120,
+  "fps": 24,
+  "seed": 106,
+  "sample_params": {
+    "sample_steps": 40,
+    "guidance": {
+      "txt_cfg": 1.0,
+      "img_cfg": 1.0
+    }
+  },
+  "vae_tiling_params": {
+    "enabled": true,
+    "temporal_tiling": true
+  },
+  "output_format": "webm"
+}

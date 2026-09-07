@@ -1,0 +1,14 @@
+{
+  "completed": 1788755711,
+  "created": 1788755699,
+  "error": {
+    "code": "generation_failed",
+    "message": "generate_video returned no results"
+  },
+  "id": "job_6a9e3ef3_00000011",
+  "kind": "vid_gen",
+  "queue_position": 0,
+  "result": null,
+  "started": 1788755699,
+  "status": "failed"
+}

@@ -1,0 +1,318 @@
+{
+  "current_mode": "vid_gen",
+  "defaults": {
+    "cache_mode": "",
+    "cache_option": "",
+    "clip_skip": -1,
+    "fps": 16,
+    "height": 512,
+    "high_noise_sample_params": {
+      "eta": null,
+      "flow_shift": null,
+      "guidance": {
+        "distilled_guidance": 3.5,
+        "img_cfg": null,
+        "slg": {
+          "layer_end": 0.20000000298023224,
+          "layer_start": 0.009999999776482582,
+          "layers": [
+            7,
+            8,
+            9
+          ],
+          "scale": 0.0
+        },
+        "txt_cfg": 7.0
+      },
+      "sample_method": "default",
+      "sample_steps": 20,
+      "scheduler": "default",
+      "shifted_timestep": 0
+    },
+    "hires": {
+      "custom_sigmas": [],
+      "denoising_strength": 0.699999988079071,
+      "enabled": false,
+      "scale": 2.0,
+      "steps": 0,
+      "target_height": 0,
+      "target_width": 0,
+      "upscale_tile_size": 128,
+      "upscaler": "Latent"
+    },
+    "moe_boundary": 0.875,
+    "negative_prompt": "",
+    "output_compression": 100,
+    "output_format": "webm",
+    "prompt": "",
+    "sample_params": {
+      "eta": null,
+      "flow_shift": null,
+      "guidance": {
+        "distilled_guidance": 3.5,
+        "img_cfg": null,
+        "slg": {
+          "layer_end": 0.20000000298023224,
+          "layer_start": 0.009999999776482582,
+          "layers": [
+            7,
+            8,
+            9
+          ],
+          "scale": 0.0
+        },
+        "txt_cfg": 1.0
+      },
+      "sample_method": "default",
+      "sample_steps": 20,
+      "scheduler": "default",
+      "shifted_timestep": 0
+    },
+    "scm_mask": "",
+    "scm_policy_dynamic": true,
+    "seed": 42,
+    "strength": 0.75,
+    "vace_strength": 1.0,
+    "vae_tiling_params": {
+      "enabled": false,
+      "extra_tiling_args": "",
+      "rel_size_x": 0.0,
+      "rel_size_y": 0.0,
+      "target_overlap": 0.5,
+      "temporal_tiling": false,
+      "tile_size_x": 0,
+      "tile_size_y": 0
+    },
+    "video_frames": 1,
+    "width": 512
+  },
+  "defaults_by_mode": {
+    "vid_gen": {
+      "cache_mode": "",
+      "cache_option": "",
+      "clip_skip": -1,
+      "fps": 16,
+      "height": 512,
+      "high_noise_sample_params": {
+        "eta": null,
+        "flow_shift": null,
+        "guidance": {
+          "distilled_guidance": 3.5,
+          "img_cfg": null,
+          "slg": {
+            "layer_end": 0.20000000298023224,
+            "layer_start": 0.009999999776482582,
+            "layers": [
+              7,
+              8,
+              9
+            ],
+            "scale": 0.0
+          },
+          "txt_cfg": 7.0
+        },
+        "sample_method": "default",
+        "sample_steps": 20,
+        "scheduler": "default",
+        "shifted_timestep": 0
+      },
+      "hires": {
+        "custom_sigmas": [],
+        "denoising_strength": 0.699999988079071,
+        "enabled": false,
+        "scale": 2.0,
+        "steps": 0,
+        "target_height": 0,
+        "target_width": 0,
+        "upscale_tile_size": 128,
+        "upscaler": "Latent"
+      },
+      "moe_boundary": 0.875,
+      "negative_prompt": "",
+      "output_compression": 100,
+      "output_format": "webm",
+      "prompt": "",
+      "sample_params": {
+        "eta": null,
+        "flow_shift": null,
+        "guidance": {
+          "distilled_guidance": 3.5,
+          "img_cfg": null,
+          "slg": {
+            "layer_end": 0.20000000298023224,
+            "layer_start": 0.009999999776482582,
+            "layers": [
+              7,
+              8,
+              9
+            ],
+            "scale": 0.0
+          },
+          "txt_cfg": 1.0
+        },
+        "sample_method": "default",
+        "sample_steps": 20,
+        "scheduler": "default",
+        "shifted_timestep": 0
+      },
+      "scm_mask": "",
+      "scm_policy_dynamic": true,
+      "seed": 42,
+      "strength": 0.75,
+      "vace_strength": 1.0,
+      "vae_tiling_params": {
+        "enabled": false,
+        "extra_tiling_args": "",
+        "rel_size_x": 0.0,
+        "rel_size_y": 0.0,
+        "target_overlap": 0.5,
+        "temporal_tiling": false,
+        "tile_size_x": 0,
+        "tile_size_y": 0
+      },
+      "video_frames": 1,
+      "width": 512
+    }
+  },
+  "features": {
+    "cache": true,
+    "cancel_generating": false,
+    "cancel_queued": true,
+    "control_frames": true,
+    "end_image": true,
+    "high_noise_sample_params": true,
+    "init_image": true,
+    "lora": true,
+    "vae_tiling": true
+  },
+  "features_by_mode": {
+    "vid_gen": {
+      "cache": true,
+      "cancel_generating": false,
+      "cancel_queued": true,
+      "control_frames": true,
+      "end_image": true,
+      "high_noise_sample_params": true,
+      "init_image": true,
+      "lora": true,
+      "vae_tiling": true
+    }
+  },
+  "limits": {
+    "max_batch_count": 8,
+    "max_height": 4096,
+    "max_queue_size": 64,
+    "max_width": 4096,
+    "min_height": 64,
+    "min_width": 64
+  },
+  "loras": [
+    {
+      "name": "minimax_h3_fl2va_pruned-UD-Q2_K_XL",
+      "path": "models/minimax_h3_fl2va_pruned-UD-Q2_K_XL.gguf"
+    },
+    {
+      "name": "qwen3vl_32b_minimax_h3-Q2_K_M",
+      "path": "models/qwen3vl_32b_minimax_h3-Q2_K_M.gguf"
+    },
+    {
+      "name": "minimax_h3_audio_vae_fp32",
+      "path": "models/vae/minimax_h3_audio_vae_fp32.safetensors"
+    },
+    {
+      "name": "minimax_h3_video_vae_fp16",
+      "path": "models/vae/minimax_h3_video_vae_fp16.safetensors"
+    }
+  ],
+  "model": {
+    "name": "minimax_h3_fl2va_pruned-UD-Q2_K_XL.gguf",
+    "path": "G:\\minimax-h3\\models\\minimax_h3_fl2va_pruned-UD-Q2_K_XL.gguf",
+    "stem": "minimax_h3_fl2va_pruned-UD-Q2_K_XL"
+  },
+  "output_formats": [
+    "webm",
+    "webp",
+    "avi"
+  ],
+  "output_formats_by_mode": {
+    "vid_gen": [
+      "webm",
+      "webp",
+      "avi"
+    ]
+  },
+  "samplers": [
+    "euler",
+    "euler_a",
+    "heun",
+    "dpm2",
+    "dpm++2s_a",
+    "dpm++2m",
+    "dpm++2mv2",
+    "ipndm",
+    "ipndm_v",
+    "lcm",
+    "ddim_trailing",
+    "tcd",
+    "res_multistep",
+    "res_2s",
+    "er_sde",
+    "euler_cfg_pp",
+    "euler_a_cfg_pp",
+    "euler_ge",
+    "dpm++2m_sde",
+    "dpm++2m_sde_bt",
+    "lms"
+  ],
+  "schedulers": [
+    "discrete",
+    "normal",
+    "karras",
+    "exponential",
+    "ays",
+    "gits",
+    "sgm_uniform",
+    "simple",
+    "smoothstep",
+    "kl_optimal",
+    "lcm",
+    "bong_tangent",
+    "ltx2",
+    "logit_normal",
+    "flux2",
+    "flux",
+    "beta"
+  ],
+  "supported_modes": [
+    "vid_gen"
+  ],
+  "upscalers": [
+    {
+      "name": "None"
+    },
+    {
+      "name": "Lanczos"
+    },
+    {
+      "name": "Nearest"
+    },
+    {
+      "name": "Latent"
+    },
+    {
+      "name": "Latent (nearest)"
+    },
+    {
+      "name": "Latent (nearest-exact)"
+    },
+    {
+      "name": "Latent (antialiased)"
+    },
+    {
+      "name": "Latent (bicubic)"
+    },
+    {
+      "name": "Latent (bicubic antialiased)"
+    }
+  ]
+}

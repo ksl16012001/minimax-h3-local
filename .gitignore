@@ -1,0 +1,23 @@
+# model weights, binaries, generated media — never commit
+models/
+bin/
+outputs/
+outputs_max/
+samples/
+samples_hq/
+samples_hq_imm/
+inputs/
+*.gguf
+*.safetensors
+*.webm
+*.mp4
+*.avi
+*.log
+*.pid
+*.lock
+.cache/
+__pycache__/
+*.pyc
+.venv/
+# keep a few small doc images
+!docs/img/*.png
