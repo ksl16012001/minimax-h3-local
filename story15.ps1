@@ -58,6 +58,7 @@ Log "shot3 done"
 
 # ---- assemble: uniform encode, hard cuts, 0.4s audio crossfade between shots
 Log "assembling"
-foreach ($i in 1..3) { & $ff -hide_banner -loglevel error -y -i "$out\shot$i.webm" -vf "scale=${W}:${H}:flags=lanczos" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -r 24 -c:a aac -b:a 192k -ar 32000 "$out\shot$i.mp4" }
-& $ff -hide_banner -loglevel error -y -i "$out\shot1.mp4" -i "$out\shot2.mp4" -i "$out\shot3.mp4" -filter_complex "[0:v][1:v][2:v]concat=n=3:v=1:a=0[v];[0:a][1:a]acrossfade=d=0.4:c1=tri:c2=tri[a01];[a01][2:a]acrossfade=d=0.4:c1=tri:c2=tri[a]" -map "[v]" -map "[a]" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart "$out\story15_final.mp4"
+# setsar=1: shots rendered at 448x800 and scaled to 512x896 get SAR 49:50, and concat requires identical SAR
+foreach ($i in 1..3) { & $ff -hide_banner -loglevel error -y -i "$out\shot$i.webm" -vf "scale=${W}:${H}:flags=lanczos,setsar=1" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -r 24 -c:a aac -b:a 192k -ar 32000 "$out\shot$i.mp4" }
+& $ff -hide_banner -loglevel error -y -i "$out\shot1.mp4" -i "$out\shot2.mp4" -i "$out\shot3.mp4" -filter_complex "[0:v]setsar=1[v0];[1:v]setsar=1[v1];[2:v]setsar=1[v2];[v0][v1][v2]concat=n=3:v=1:a=0[v];[0:a][1:a]acrossfade=d=0.4:c1=tri:c2=tri[a01];[a01][2:a]acrossfade=d=0.4:c1=tri:c2=tri[a]" -map "[v]" -map "[a]" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart "$out\story15_final.mp4"
 if (Test-Path "$out\story15_final.mp4") { Log "STORY DONE -> $out\story15_final.mp4" } else { Log "ASSEMBLE FAILED" }

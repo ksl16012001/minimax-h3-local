@@ -62,3 +62,16 @@ Decision 2026-09-07: storyboard FL2VA shots use the baked LoRA (USE_LORA flag); 
 Ref2VA at 512x896x124 FAILED on 8 GB ("segment 3/51 failed during weight preparation"): needed budget 5.45-5.87 GB vs ~5.3 GB practical ceiling.
 FL2VA at the same size needs 5.20 GB and works. Reference-image tokens add ~0.5 GB. Fix: Ref2VA shots at 448x800 (~10.9k tokens, ~4.5 GB) and upscale to 512x896 at assembly (story15.ps1).
 Storyboard shot1 (FL2VA baked LoRA, 8 steps, 512x896x124): 938s total (sampling 502s, decode 163s).
+
+### I2V VRAM (2026-09-07)
+I2V (first-frame) at 768x1344x56 FAILED: needed budget 5.85-6.25 GB (T2V same size: 5.27 GB). Init-image conditioning adds ~0.6-1 GB.
+Expect I2V/FLF2V ceiling on 8 GB around 640x1152x56 (~10.8k tokens). test_suite.py t04/t05 ladders extended accordingly.
+Empirical budget ceiling on RTX 3070 8 GB ≈ 5.3 GB (FL2VA 768x1344x56 passes at 5.27; anything ≥5.45 fails).
+
+### Storyboard shot 2 — Ref2VA product identity (2026-09-07)
+Ref2VA Q8, 25 steps, 448x800x124, 1 reference (768p perfume frame): product identity preserved almost exactly (bottle shape, cap, label, liquid color) in a new scene with hand + spray mist. 3370s total because RAM thrashed (sd-cli private 26.9 GB, WS 8.2 GB, pagefile peak 24 GB; League client also running). Ref2VA keeps more in RAM than FL2VA (vision tower + ref latents) even with te=disk.
+-> R2V is the right pipeline for "product photo -> ad video". For speed on 32 GB RAM: close other apps, or use Ref2VA Q6_K (15.4 GB) instead of Q8 (20 GB).
+
+### Storyboard 15s — DONE (2026-09-07)
+outputs_max/story15/story15_final.mp4 (15.5 s, 512x896, 3 shots). shot1 FL2VA baked LoRA 8 steps 512x896x124 (938s); shot2 Ref2VA 25 steps 448x800x124 (3370s, RAM thrash); shot3 Ref2VA 2 refs 448x800x124 (1614s, sampling 1090s).
+Assembly gotcha: scaled shots carry SAR 49:50 -> concat fails ("Could not open encoder before EOF"); fixed with setsar=1 (story15.ps1).

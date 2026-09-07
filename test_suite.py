@@ -35,10 +35,11 @@ TASKS = [
          ladder=[R(768,1344,56,40), R(768,1344,56,30), R(768,1344,56,25)]),
     dict(id="t04_i2v_long", dit=FL2_LORA, steps=8, seed=104, init=HUMAN0,
          prompt="Continue from the first frame: the same young Vietnamese woman in the white linen shirt at the cafe window. She takes a sip of coffee, sets the cup down, then looks out the window and smiles as a friend waves from outside; she waves back. Keep her face, hair and clothes consistent. Static camera, slow push-in, realistic hands. Sound: cafe ambience, cup on saucer, soft laugh.",
-         ladder=[R(768,1344,124), R(768,1344,90), R(768,1344,73), R(768,1344,56)]),
+         # I2V adds ~0.6-1 GB over T2V (init-image conditioning): 768x1344x56 needs 5.85-6.25 GB budget -> fails on 8 GB
+         ladder=[R(768,1344,124), R(768,1344,90), R(768,1344,73), R(768,1344,56), R(640,1152,73), R(640,1152,56), R(576,1024,56)]),
     dict(id="t05_flf2v", dit=FL2_LORA, steps=8, seed=105, init=HUMAN0, end=HUMAN55,
          prompt="The same young Vietnamese woman at the cafe window moves naturally from the first frame to the last frame: she lifts her hand and tucks her hair behind her ear while smiling. Smooth realistic motion, consistent identity and lighting. Sound: cafe ambience, soft acoustic guitar.",
-         ladder=[R(768,1344,56), R(640,1152,56)]),
+         ladder=[R(768,1344,56), R(640,1152,56), R(576,1024,56), R(512,896,56)]),
     dict(id="t06_r2v_product", dit=REF, steps=25, seed=106, refs=[PROD_REF],
          prompt="Use the perfume bottle from <Picture 1> as the product, keeping its crystal shape, cap and liquid color exactly consistent. Vertical luxury commercial: the bottle stands on a rain-wet black marble ledge at night, city neon bokeh behind, slow orbit, droplets on glass catching colored light, premium advertising look. Sound: soft rain, distant city, cinematic synth pad.",
          ladder=[R(768,1344,56), R(640,1152,56), R(576,1024,56), R(512,896,56)]),
