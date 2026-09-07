@@ -10,10 +10,13 @@ Local text/image/reference-to-video (with synchronized stereo audio) using
 ## Quick start
 
 ```bat
-setup.bat            :: recommended (~28 GB): Q3 DiT + Q2 text encoder + VAEs + turbo LoRA
-setup.bat fast       :: minimal (~25 GB)
-setup.bat max        :: everything (~140 GB): Q8 FL2VA/Ref2VA, Q4 text encoder, bf16 for LoRA baking
+setup.bat              :: default = max (~140 GB): all Python deps incl. torch, sd.cpp CUDA binaries,
+                       ::   Q3 + Q8 FL2VA, Q8 Ref2VA, Q2 + Q4 text encoders, VAEs, both turbo LoRAs, bf16 DiT for baking
+setup.bat recommended  :: ~28 GB: Q3 DiT + Q2 text encoder + VAEs + turbo LoRA
+setup.bat fast         :: ~25 GB: Q2 DiT + Q2 text encoder + VAEs
+setup.bat test         :: ~1.4 GB smoke test (binaries + audio VAE)
 ```
+Binary zips already present in `bin\` are reused (offline install), and `hf download` resumes partial files.
 
 Then either:
 
