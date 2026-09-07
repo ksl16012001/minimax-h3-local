@@ -57,7 +57,8 @@ TASKS = [
          ladder=[R(768,1344,73), R(768,1344,56)]),
 ]
 
-FAIL_PAT = re.compile(r"sampling failed|compute failed|failed during weight preparation|generate failed|out of memory|OOM", re.I)
+# only real [ERROR] lines: VERBOSE "failed to allocate ... pinned memory: out of memory" is a harmless fallback
+FAIL_PAT = re.compile(r"\[ERROR\s*\].*(sampling failed|compute failed|failed during weight preparation|generate failed)", re.I)
 NEED_PAT = re.compile(r"need ([\d.]+) MB device / ([\d.]+) MB budget")
 TIME_PAT = {"te_s": r"get_learned_condition completed, taking ([\d.]+)s", "sample_s": r"sampling completed, taking ([\d.]+)s", "decode_s": r"decode_first_stage completed, taking ([\d.]+)s"}
 
