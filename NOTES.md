@@ -57,3 +57,8 @@ sd-server must be stopped first (VRAM+RAM). Logs from Tee-Object are UTF-16 -> r
 VRAM at 768x1344x56: compute budget ~5.27GB, per-step warning "need 750MB, available 245MB" but ggml copes. 1080p impossible.
 
 Decision 2026-09-07: storyboard FL2VA shots use the baked LoRA (USE_LORA flag); Ref2VA shots use base 25 steps.
+
+### Ref2VA VRAM (2026-09-07)
+Ref2VA at 512x896x124 FAILED on 8 GB ("segment 3/51 failed during weight preparation"): needed budget 5.45-5.87 GB vs ~5.3 GB practical ceiling.
+FL2VA at the same size needs 5.20 GB and works. Reference-image tokens add ~0.5 GB. Fix: Ref2VA shots at 448x800 (~10.9k tokens, ~4.5 GB) and upscale to 512x896 at assembly (story15.ps1).
+Storyboard shot1 (FL2VA baked LoRA, 8 steps, 512x896x124): 938s total (sampling 502s, decode 163s).
