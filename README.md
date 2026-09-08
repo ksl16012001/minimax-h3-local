@@ -46,6 +46,20 @@ VRAM rule of thumb: sampling memory ≈ 0.3–0.35 MB per latent token, tokens =
 ![768p vs 384p](docs/img/max_768p_vs_384p.png)
 *Left: Q3+LoRA 384×672 upscaled. Right: Q8 base, 25 steps, 768×1344 native.*
 
+
+## Use-case coverage on 8 GB (test_suite.py, auto step-down)
+
+| Mode | Max that fits | Notes |
+|---|---|---|
+| T2V, I2V, R2V (1 ref), speech/lip-sync | 768×1344 × 56 f (2.3 s) | Q8 DiT, TE Q4, 8 steps (baked turbo LoRA) or 25 steps base |
+| FLF2V (first+last frame), R2V (2 refs) | 640×1152 × 56 f | +30–37 % VRAM vs T2V |
+| Longest single shot | 384×672 × 243 f (10 s) | 15 s does not fit at any resolution |
+| V2V (reference video) | 448×800 × 56 f, `--backend te=cpu,vae=cpu` | VAE encode graph needs ~10 GB on GPU |
+| R2V + Ref2V turbo 4-step LoRA (runtime) | 576×1024 | passes but composition collapses — avoid |
+
+![10 tests](docs/img/suite_10_tests.png)
+Full numbers: `NOTES.md` (per-test TE/sampling/decode times, VRAM "need" per failed rung).
+
 ## Scripts
 
 | File | Purpose |

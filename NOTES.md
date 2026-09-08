@@ -98,3 +98,21 @@ IMPORTANT: the 2026-09-07 I2V/R2V failures at 768x1344x56 were caused by League 
 - t09 V2V (--ref-video): fails in <10 s at ANY output size with "vae encode compute failed" — the reference video is VAE-encoded untiled; 512x896x56 ref needs 10150 MB. Ladder now varies the reference size (320x576, 256x448). Rule: ref-video VRAM ≈ 10.1 GB x (ref pixels x frames)/(512x896x56).
 - t10 speech + lip-sync (Vietnamese line): OK at 768x1344x56, 8 steps, 859s; 73f needs 7521 MB -> fail. Visually convincing showroom presenter (even a lavalier mic), clear changing mouth shapes; waveform shows ~10 syllable bursts (mean -13 dB, peak 0 dB). Intelligibility to be judged by ear.
 - t09 V2V root cause (2026-09-08): the reference-video VAE *encode* graph stages the whole video VAE on the GPU as one segment — constant need 10149 MB regardless of reference size, tile size (--vae-tile-size 16x16/8x8) or frame count (22). Only workaround on 8 GB: `--backend te=cpu,vae=cpu` (VAE on CPU; slow encode/decode). Being tested.
+
+## Test suite — FINAL (10/10, 2026-09-08)
+
+| task | passed at | tokens | need/budget MB | TE | sampling | decode | wall | failed rungs |
+|---|---|---|---|---|---|---|---|---|
+| t01_t2v_native_long | 768x1344x56_s8 | 15120 | None/None | 209.08 | 524.35 | 140.95 | 900s | 768x1344x124_s8, 768x1344x90_s8, 768x1344x73_s8 |
+| t02_t2v_15s | 384x672x243_s8 | 14868 | 784.14/5749.29 | 200.33 | 580.75 | 176.65 | 988s | 384x672x362_s8, 352x640x362_s8, 320x576x362_s8 |
+| t03_t2v_base40_text | 768x1344x56_s40 | 15120 | None/None | 207.87 | 1969.61 | 144.46 | 2350s | - |
+| t04_i2v_long | 768x1344x56_s8 | 15120 | 792.3/5841.27 | 339.42 | 589.5 | 147.01 | 1114s | 768x1344x124_s8, 768x1344x90_s8, 768x1344x73_s8 |
+| t05_flf2v | 640x1152x56_s8 | 10800 | None/None | 383.21 | 475.1 | 118.01 | 1014s | 768x1344x56_s8 |
+| t06_r2v_product | 768x1344x56_s25 | 15120 | 792.16/5839.31 | 341.37 | 1495.72 | 141.36 | 2018s | - |
+| t07_r2v_char_product | 640x1152x56_s25 | 10800 | None/None | 320.27 | 1074.72 | 123.47 | 1564s | 768x1344x56_s25 |
+| t08_r2v_turbo4 | 576x1024x56_s4 | 8640 | 623.4/3762.5 | 269.09 | 283.29 | 89.63 | 720s | 768x1344x56_s4, 640x1152x56_s4 |
+| t09_v2v_refvideo | 448x800x56_s25_ref_256_bvaecpu | 5250 | None/None | 266.25 | 602.16 | 735.83 | 1935s | 512x896x56_s25, 448x800x56_s25, 384x672x56_s25, 448x800x56_s25_ref_320, 448x800x56_s25_ref_256, 384x672x56_s25_ref_256, 448x800x56_s25_ref_320_t16x16, 448x800x56_s25_ref_256_t8x8, 384x672x56_s25_ref_256f22_t8x8 |
+| t10_speech_lipsync | 768x1344x56_s8 | 15120 | None/None | 194.07 | 506.75 | 133.23 | 859s | 768x1344x73_s8 |
+
+Ceiling per mode on RTX 3070 8 GB (clean GPU): T2V / I2V / R2V-1ref / speech: 768x1344x56 (2.3 s). FLF2V / R2V-2refs: 640x1152x56. R2V + runtime LoRA: 576x1024x56 (and the 4-step Ref2V LoRA v0.1 collapses composition -> don't use). Single-shot max length: 10 s at 384x672. V2V: only with `--backend te=cpu,vae=cpu` (VAE encode graph stages ~10.1 GB on GPU), 448x800x56, 1935s (decode 736s on CPU).
+- t09 V2V: motion, framing and camera timing of the reference preserved while fully restyled (cyberpunk night) — works.
