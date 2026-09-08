@@ -21,6 +21,7 @@ HUMAN0 = os.path.join(INP, "suite_human_f0.png"); HUMAN55 = os.path.join(INP, "s
 PROD_REF = os.path.join(INP, "perfume_768_ref.png"); CHAR_REF = os.path.join(ROOT, "outputs_max", "story15", "char_ref.png")
 REFVID_DIR = os.path.join(INP, "refvideo_shot1")
 REFVID_320 = os.path.join(INP, "refvideo_shot1_320"); REFVID_256 = os.path.join(INP, "refvideo_shot1_256")
+REFVID_256_22 = os.path.join(INP, "refvideo_shot1_256f22")
 
 def R(w, h, f, steps=None, **extra): return {"w": w, "h": h, "frames": f, **({"steps": steps} if steps else {}), **extra}
 
@@ -28,6 +29,7 @@ def R(w, h, f, steps=None, **extra): return {"w": w, "h": h, "frames": f, **({"s
 def cfg_tag(task, cfg):
     tag = f"{cfg['w']}x{cfg['h']}x{cfg['frames']}_s{cfg.get('steps', task['steps'])}"
     if cfg.get("ref_video"): tag += "_ref" + os.path.basename(cfg["ref_video"]).replace("refvideo_shot1", "")
+    if cfg.get("extra"): tag += "_" + "".join(x.replace("--", "").replace("vae-tile-size", "t").replace("backend", "b").replace("te=cpu,vae=cpu", "vaecpu") for x in cfg["extra"])
     return tag
 
 TASKS = [
@@ -59,8 +61,16 @@ TASKS = [
     # the reference video is VAE-encoded untiled: 512x896x56 needs ~10.1 GB regardless of output size -> ladder over ref size
     dict(id="t09_v2v_refvideo", dit=REF, steps=25, seed=109, ref_video=REFVID_DIR,
          prompt="Use the motion and framing of <Video 1>: the same woman walking toward the camera on a rooftop terrace, but restyled as a rainy cyberpunk night — neon signs, holographic billboards, wet reflective floor, cyan and magenta rim light, her dress now dark metallic. Keep the camera movement and timing of the reference. Sound: rain, synthwave music, distant hover-car hum.",
+         # VAE encode of the reference uses a fixed tile (default 32x32 latent) x all frames, untiled in time -> ~10.1 GB for 56 frames
+         # regardless of reference resolution; shrink the tile and/or the reference length
          ladder=[R(512,896,56), R(448,800,56), R(384,672,56),
-                 R(448,800,56, ref_video=REFVID_320), R(448,800,56, ref_video=REFVID_256), R(384,672,56, ref_video=REFVID_256)]),
+                 R(448,800,56, ref_video=REFVID_320), R(448,800,56, ref_video=REFVID_256), R(384,672,56, ref_video=REFVID_256),
+                 R(448,800,56, ref_video=REFVID_320, extra=["--vae-tile-size", "16x16"]),
+                 R(448,800,56, ref_video=REFVID_256, extra=["--vae-tile-size", "8x8"]),
+                 R(384,672,56, ref_video=REFVID_256_22, extra=["--vae-tile-size", "8x8"]),
+                 # the encode graph stages the whole VAE (~10.1 GB) on the GPU -> run the VAE on CPU instead
+                 R(448,800,56, ref_video=REFVID_256, extra=["--backend", "te=cpu,vae=cpu"]),
+                 R(384,672,56, ref_video=REFVID_256_22, extra=["--backend", "te=cpu,vae=cpu"])]),
     dict(id="t10_speech_lipsync", dit=FL2_LORA, steps=8, seed=110,
          prompt="Vertical talking-head shot: a friendly young Vietnamese woman in a beige blazer stands in a bright modern showroom, looks into the camera and speaks clearly in Vietnamese: \"Chào mừng bạn đến với bộ sưu tập mới của chúng tôi.\" Natural lip movement matching the words, subtle hand gesture, soft studio light, shallow depth of field. Sound: her clear Vietnamese voice, quiet room tone.",
          ladder=[R(768,1344,73), R(768,1344,56)]),
@@ -84,10 +94,10 @@ def prep_inputs(ff):
     if not os.path.isdir(REFVID_DIR) or not os.listdir(REFVID_DIR):
         os.makedirs(REFVID_DIR, exist_ok=True)
         subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", SHOT1_WEBM, "-vf", "select='lt(n\\,56)'", "-vsync", "0", os.path.join(REFVID_DIR, "f%04d.png")])
-    for d, w, h in ((REFVID_320, 320, 576), (REFVID_256, 256, 448)):
+    for d, w, h, nf in ((REFVID_320, 320, 576, 56), (REFVID_256, 256, 448, 56), (REFVID_256_22, 256, 448, 22)):
         if not os.path.isdir(d) or not os.listdir(d):
             os.makedirs(d, exist_ok=True)
-            subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", SHOT1_WEBM, "-vf", f"select='lt(n\\,56)',scale={w}:{h}:flags=lanczos", "-vsync", "0", os.path.join(d, "f%04d.png")])
+            subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", SHOT1_WEBM, "-vf", f"select='lt(n\\,{nf})',scale={w}:{h}:flags=lanczos", "-vsync", "0", os.path.join(d, "f%04d.png")])
 
 
 def tokens(w, h, f):
@@ -108,6 +118,7 @@ def run_attempt(task, cfg, tdir, ff):
     for r in task.get("refs", []): args += ["--ref-image", r]
     rv = cfg.get("ref_video") or task.get("ref_video")
     if rv: args += ["--ref-video", rv]
+    args += cfg.get("extra", [])
     if task.get("lora_tag"): args += ["--lora-model-dir", os.path.join(M, "loras")]
     t0 = time.time()
     with open(log, "wb") as lf:

@@ -91,3 +91,10 @@ Assembly gotcha: scaled shots carry SAR 49:50 -> concat fails ("Could not open e
 Calibration: need_MB ≈ 0.38 x tokens at 768p (T2V); I2V ≈ +5%, FLF2V ≈ +37%, R2V 2 refs ≈ +30% vs T2V at the same size.
 IMPORTANT: the 2026-09-07 I2V/R2V failures at 768x1344x56 were caused by League of Legends holding VRAM, not by the model — on a clean GPU both pass. The server's VRAM planner must read live free VRAM (nvidia-smi) rather than assume 8 GB.
 15 s in one shot does not fit on 8 GB at any resolution >= 320x576; 10 s at 384x672 works (988s).
+
+### Suite t07-t09 (2026-09-08)
+- t07 R2V 2 refs (character + product): OK at 640x1152x56, 25 steps, 1564s; 768p needs 6838 MB -> fail. Identity of both preserved.
+- t08 R2V + Ref2V turbo 4-step LoRA v0.1 (runtime): technically OK at 576x1024x56 (720s) but QUALITY COLLAPSE — product correct for ~1 s, then camera drifts into silk and the last frames become abstract light swirls. Runtime LoRA also adds ~1.1 GB VRAM (768p 7043 MB, 640x1152 5385 MB -> fail). Do NOT use this LoRA for product clips; use base Ref2VA 25 steps.
+- t09 V2V (--ref-video): fails in <10 s at ANY output size with "vae encode compute failed" — the reference video is VAE-encoded untiled; 512x896x56 ref needs 10150 MB. Ladder now varies the reference size (320x576, 256x448). Rule: ref-video VRAM ≈ 10.1 GB x (ref pixels x frames)/(512x896x56).
+- t10 speech + lip-sync (Vietnamese line): OK at 768x1344x56, 8 steps, 859s; 73f needs 7521 MB -> fail. Visually convincing showroom presenter (even a lavalier mic), clear changing mouth shapes; waveform shows ~10 syllable bursts (mean -13 dB, peak 0 dB). Intelligibility to be judged by ear.
+- t09 V2V root cause (2026-09-08): the reference-video VAE *encode* graph stages the whole video VAE on the GPU as one segment — constant need 10149 MB regardless of reference size, tile size (--vae-tile-size 16x16/8x8) or frame count (22). Only workaround on 8 GB: `--backend te=cpu,vae=cpu` (VAE on CPU; slow encode/decode). Being tested.
