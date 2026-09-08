@@ -129,10 +129,13 @@ def main():
     results = json.load(open(rpath)) if os.path.exists(rpath) else {}
     for task in TASKS:
         if a.only and task["id"] not in a.only: continue
-        if results.get(task["id"], {}).get("final", {}).get("ok"): print(f"[suite] {task['id']} already done, skip", flush=True); continue
+        if (results.get(task["id"], {}).get("final") or {}).get("ok"): print(f"[suite] {task['id']} already done, skip", flush=True); continue
         tdir = os.path.join(OUT, task["id"]); os.makedirs(tdir, exist_ok=True)
-        attempts = []
+        attempts = list(results.get(task["id"], {}).get("attempts", []))   # resume: keep earlier attempts
+        failed_tags = {x["config"] for x in attempts if not x["ok"]}
         for cfg in task["ladder"]:
+            tag = f"{cfg['w']}x{cfg['h']}x{cfg['frames']}_s{cfg.get('steps', task['steps'])}"
+            if tag in failed_tags: print(f"[suite] {task['id']} skip {tag} (failed earlier)", flush=True); continue
             print(f"[suite] {task['id']} try {cfg}", flush=True)
             r = run_attempt(task, cfg, tdir, ff); attempts.append(r)
             print(f"[suite] {task['id']} {r['config']} -> {'OK' if r['ok'] else 'FAIL'} wall={r['wall_s']}s need={r.get('need_mb')}MB {r.get('error','')}", flush=True)

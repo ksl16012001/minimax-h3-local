@@ -75,3 +75,19 @@ Ref2VA Q8, 25 steps, 448x800x124, 1 reference (768p perfume frame): product iden
 ### Storyboard 15s — DONE (2026-09-07)
 outputs_max/story15/story15_final.mp4 (15.5 s, 512x896, 3 shots). shot1 FL2VA baked LoRA 8 steps 512x896x124 (938s); shot2 Ref2VA 25 steps 448x800x124 (3370s, RAM thrash); shot3 Ref2VA 2 refs 448x800x124 (1614s, sampling 1090s).
 Assembly gotcha: scaled shots carry SAR 49:50 -> concat fails ("Could not open encoder before EOF"); fixed with setsar=1 (story15.ps1).
+
+## Test suite (test_suite.py) — partial results, clean machine after reboot 2026-09-08
+
+| test | passed at | tokens | TE | sampling | decode | wall | failed rungs (need MB) |
+|---|---|---|---|---|---|---|---|
+| t01 T2V 768p long | 768x1344x56 (8 st) | 15120 | 209s | 524s | 141s | 900s | 124f (11806), 90f (8947), 73f (7518) |
+| t02 T2V 15 s single shot | 384x672x243 = 10 s (8 st) | 14868 | | | | 988s | 384x672x362 (9152), 352x640x362 (8192), 320x576x362 (fail, other) |
+| t03 T2V base 40 steps + text | 768x1344x56 (40 st) | 15120 | | | | 2350s | - |
+| t04 I2V long | 768x1344x56 (8 st) | 15120 | | | | 1114s | 124f (12367), 90f (9510), 73f (8081) |
+| t05 FLF2V | 640x1152x56 (8 st) | 10800 | | | | 1014s | 768x1344x56 (7211) |
+| t06 R2V 1 ref | 768x1344x56 (25 st) | 15120 | | | | 2018s | - |
+| t07 R2V 2 refs | (running) | | | | | | 768x1344x56 (6838) |
+
+Calibration: need_MB ≈ 0.38 x tokens at 768p (T2V); I2V ≈ +5%, FLF2V ≈ +37%, R2V 2 refs ≈ +30% vs T2V at the same size.
+IMPORTANT: the 2026-09-07 I2V/R2V failures at 768x1344x56 were caused by League of Legends holding VRAM, not by the model — on a clean GPU both pass. The server's VRAM planner must read live free VRAM (nvidia-smi) rather than assume 8 GB.
+15 s in one shot does not fit on 8 GB at any resolution >= 320x576; 10 s at 384x672 works (988s).
